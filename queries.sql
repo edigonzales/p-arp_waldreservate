@@ -67,7 +67,8 @@ WITH pub AS
     '::text) || coda.kurzbez::text AS besch_flaeche, 
         (vereinbarung.vbnr::text || '
     '::text) || flaechen_geom_t.polyid AS besch_akarte,
-        vbart.bez AS vbart_bez
+        vbart.bez AS vbart_bez,
+        vereinbarung.rrbbeschlussid
     FROM 
         mjpnatur.vereinbarung
         JOIN mjpnatur.flaechen 
@@ -134,9 +135,13 @@ WITH pub AS
         person.archive = 0
 )
 SELECT 
-    *
+    pub.*,
+    rrbbeschluss.rrbnr,
+    rrbbeschluss.rrbdatum
 FROM 
     pub
+    LEFT JOIN mjpnatur.rrbeschluss AS rrbbeschluss 
+    ON rrbbeschluss.rrbid = pub.rrbbeschlussid
 WHERE 
     vbart_bez = 'Waldreservate'
 ;
