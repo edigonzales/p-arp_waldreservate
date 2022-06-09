@@ -16,7 +16,7 @@ export ORG_GRADLE_PROJECT_dbUserPub=admin
 export ORG_GRADLE_PROJECT_dbPwdPub=admin
 ```
 
-Im gretljobs-Repo-Ordner
+Im sogis/gretljobs-Repo-Ordner
 ```
 docker-compose up
 ```

@@ -1,0 +1,22 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.api.TransferSet
+
+apply plugin: 'ch.so.agi.gretl'
+
+task createSchema(type: SqlExecutor){
+    database = [dbUriEdit, dbUserEdit, dbPwdEdit]
+    sqlFiles = ['create_transfer_schema.sql']
+}
+
+task transferData(type: Db2Db){
+    sourceDb = [dbUriSogis, dbUserSogis, dbPwdSogis]
+    targetDb = [dbUriEdit, dbUserEdit, dbPwdEdit]
+    transferSets = [
+            new TransferSet('transfer_data.sql', 'arp_mjpnatur_tmp.flaechen', true)
+    ];
+}
+
+task dummy(type: SqlExecutor){
+    database = [dbUriSogis, dbUserSogis, dbPwdSogis]
+    sqlFiles = ['test.sql']
+}
