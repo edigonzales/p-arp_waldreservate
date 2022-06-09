@@ -3,20 +3,21 @@ import ch.so.agi.gretl.api.TransferSet
 
 apply plugin: 'ch.so.agi.gretl'
 
-task createSchema(type: SqlExecutor){
+task transferData(type: SqlExecutor){
     database = [dbUriEdit, dbUserEdit, dbPwdEdit]
-    sqlFiles = ['create_transfer_schema.sql']
+    sqlFiles = ['transferData.sql']
 }
 
-task transferData(type: Db2Db){
-    sourceDb = [dbUriSogis, dbUserSogis, dbPwdSogis]
-    targetDb = [dbUriEdit, dbUserEdit, dbPwdEdit]
-    transferSets = [
-            new TransferSet('transfer_data.sql', 'arp_mjpnatur_tmp.flaechen', true)
-    ];
+task exportData(type: Ili2pgExport, dependsOn: "transferData") {
+    database = [dbUriEdit, dbUserEdit, dbPwdEdit]
+    models = "SO_ARP_Waldreservate_20220607"
+    dbschema = "arp_waldreservate_v1"
+    dataFile = "ch.so.arp.waldreservate_edit.xtf"
+    disableValidation = true
 }
 
-task dummy(type: SqlExecutor){
-    database = [dbUriSogis, dbUserSogis, dbPwdSogis]
-    sqlFiles = ['test.sql']
+task validateData(type: IliValidator, dependsOn: "exportData") {
+    dataFiles = [file("ch.so.arp.waldreservate_edit.xtf")]
+    logFile = "ilivalidator.log"
+    allObjectsAccessible = true
 }

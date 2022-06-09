@@ -1,4 +1,12 @@
 DELETE FROM 
+    arp_waldreservate_v1.waldreservat_dokument 
+;
+
+DELETE FROM 
+    arp_waldreservate_v1.dokument 
+;
+
+DELETE FROM 
     arp_waldreservate_v1.waldreservat_teilobjekt
 ;
 
@@ -108,3 +116,68 @@ Daten. Weil das nicht zwingend so sein muss und um Rahmenmodell-konform
 zu sein, ist es wie das Rahmenmodell modelliert. Irgendwie muss man sowieso
 den leicht komplizierten Datenumbau machen.
 */
+
+WITH dokumente AS 
+(   
+    SELECT 
+        DISTINCT ON (vbnr)
+        nextval('arp_waldreservate_v1.t_ili2db_seq'::regclass) AS t_id,
+        vbnr,
+        'Ich bin ein Titel' AS titel,
+        'RRB' AS abkuerzung,
+        CASE 
+            WHEN rrbnr IS NULL THEN 'FIXME-' || gen_random_uuid ()
+            ELSE rrbnr 
+        END AS offiziellenr,
+        'https://geo.so.ch/docs/ch.so.arp.waldreservate/' || gen_random_uuid () || '.pdf' AS textimweb,
+        'inKraft' AS rechtsstatus,
+        CASE 
+            WHEN rrbdatum IS NULL THEN '2999-12-31'
+            ELSE rrbdatum 
+        END AS publiziertab
+    FROM 
+        arp_mjpnatur_tmp.flaechen
+)
+,
+dokumente_insert AS 
+(
+    INSERT INTO
+        arp_waldreservate_v1.dokument 
+        (
+            --t_id,
+            titel,
+            abkuerzung,
+            offiziellenr,
+            textimweb,
+            rechtsstatus,
+            publiziertab
+        )
+    SELECT 
+        DISTINCT ON (offiziellenr, publiziertab)
+        --t_id,
+        titel,
+        abkuerzung,
+        offiziellenr,
+        textimweb,
+        rechtsstatus,
+        publiziertab
+    FROM 
+        dokumente
+    RETURNING *
+)
+INSERT INTO 
+    arp_waldreservate_v1.waldreservat_dokument 
+    (
+        dokumente,
+        festlegung
+    )
+SELECT 
+    dokumente_insert.t_id AS dokumente,
+    waldreservat.t_id AS festlegung
+FROM 
+    dokumente
+    LEFT JOIN dokumente_insert
+    ON dokumente.offiziellenr = dokumente_insert.offiziellenr AND dokumente.publiziertab = dokumente_insert.publiziertab
+    LEFT JOIN arp_waldreservate_v1.waldreservat AS waldreservat 
+    ON waldreservat.objnummer = dokumente.vbnr
+;

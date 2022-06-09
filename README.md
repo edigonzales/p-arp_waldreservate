@@ -28,6 +28,7 @@ docker-compose up
 
 ```
 ./start-gretl.sh --docker-image sogis/gretl:latest --docker-network gretljobs_default --job-directory $PWD/transfer_from_sogis tasks --all
+./start-gretl.sh --docker-image sogis/gretl:latest --docker-network gretljobs_default --job-directory $PWD/datenumbau tasks --all
 ```
 
 ## Schema-Jobs
