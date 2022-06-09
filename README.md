@@ -2,6 +2,11 @@
 
 - Teilgebiet-Beispiel: 11.004A
 
+## Manuelle Arbeiten nach SOGIS->Edit
+- Code
+- einige Flurnamen
+- fehlende RRB und fehlende Attribute. Achtung es gibt ein Dummy-RRB. Dieser ist mit den Waldreservaten verknüpft. D.h. man kann nicht bloss diesen Dummy einmal ersetzen, sondern x-fach und die Beziehung muss mehrfach erfasst werden.
+
 
 ## GRETL-Jobs
 ```

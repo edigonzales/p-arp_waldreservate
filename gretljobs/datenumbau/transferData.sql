@@ -9,6 +9,7 @@ DELETE FROM
 WITH flaechen AS 
 (
     SELECT 
+        t_id,
         vereinbarungid,
         vbnr,
         ST_ReducePrecision((ST_Dump(geometrie)).geom, 0.001) AS geometrie,
@@ -80,11 +81,30 @@ waldreservate AS
         ON flaechen.vbnr = flaechen_waldreservat.vbnr
     RETURNING *
 )
+INSERT INTO 
+    arp_waldreservate_v1.waldreservat_teilobjekt 
+    (
+        teilobj_nr,
+        mcpfe_code,
+        obj_gisteilobjekt,
+        geo_obj,
+        wr
+    )
 SELECT 
-    waldreservate.t_id,
-    waldreservate.objnummer,
-    flaechen.*
+    flaechen.t_id AS teilobj_nr, -- t_id: kann sich aendern
+    'MCPFE1_1' AS mcpfe_code, -- fixme afterwards
+    ST_Area(flaechen.geometrie) / 10000 AS obj_gisteilobjekt,
+    flaechen.geometrie,
+    waldreservate.t_id
 FROM
     waldreservate
     LEFT JOIN flaechen 
     ON flaechen.vbnr = waldreservate.objnummer
+;
+
+/*
+Dokumente: Es gibt nur ein Dokument für eine Vereinbarung in den heutigen
+Daten. Weil das nicht zwingend so sein muss und um Rahmenmodell-konform 
+zu sein, ist es wie das Rahmenmodell modelliert. Irgendwie muss man sowieso
+den leicht komplizierten Datenumbau machen.
+*/
