@@ -64,14 +64,16 @@ waldreservate AS
         obj_gesflaeche,
         obj_gisflaeche,
         aname,
-        rechtsstatus
+        rechtsstatus,
+        publiziertab
     )
     SELECT 
         flaechen_waldreservat.vbnr,
         flaechen_waldreservat.flaeche,
         flaechen_waldreservat.gis_flaeche,
         flaechen.flurname,
-        'inKraft'
+        'inKraft',
+        flaechen.rrbdatum
     FROM 
         flaechen_waldreservat 
         LEFT JOIN 
