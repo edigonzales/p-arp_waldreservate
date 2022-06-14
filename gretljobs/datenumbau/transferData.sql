@@ -35,7 +35,7 @@ WITH flaechen AS
             ELSE rrbnr 
         END AS rrbnr,
         CASE 
-            WHEN rrbdatum IS NULL THEN '2999-12-31'
+            WHEN rrbdatum IS NULL THEN '2100-12-31'
             ELSE rrbdatum 
         END AS rrbdatum
     FROM 
